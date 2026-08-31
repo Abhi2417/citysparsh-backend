@@ -20,7 +20,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/citizen/complaints")
-@CrossOrigin("*")
 public class CitizenComplaintController {
 
     @Autowired

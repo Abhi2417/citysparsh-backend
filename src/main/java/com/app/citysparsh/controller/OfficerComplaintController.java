@@ -15,7 +15,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/officer/complaints")
-@CrossOrigin("*")
 public class OfficerComplaintController {
 
     @Autowired

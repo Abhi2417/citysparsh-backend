@@ -12,7 +12,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/wards")
-@CrossOrigin("*")
 public class WardController {
 
     @Autowired
