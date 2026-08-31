@@ -1,18 +1,18 @@
 server:
-  port: 8080
+  port: ${PORT:8080}
 
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/citysparsh?useSSL=false&createDatabaseIfNotExist=true
-    username: root
-    password: Abhi@sql2238
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   mail:
     host: smtp.gmail.com
     port: 587
-    username: citysparsh.app@gmail.com
-    password: clqk ixep durh iddd   # Gmail App Password, not your login password
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}   # Gmail App Password, not your login password
     properties:
       mail:
         smtp:
@@ -39,10 +39,10 @@ spring:
 
 app:
   mail:
-    from: citysparsh.app@gmail.com
+    from: ${MAIL_USERNAME}
     app-name: CitySparsh
 
 # JWT Config
 jwt:
-  secret: "RADHAKRISHNA_VRINDAVAN_LOVE_WORLD_1342134213421342"
-  expiration: 86400000   # 1 day in milliseconds
+  secret: ${JWT_SECRET:RADHAKRISHNA_VRINDAVAN_LOVE_WORLD_1342134213421342}
+  expiration: ${JWT_EXPIRATION:86400000}   # 1 day in milliseconds
