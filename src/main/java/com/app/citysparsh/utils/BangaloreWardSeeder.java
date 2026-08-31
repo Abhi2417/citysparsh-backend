@@ -3,6 +3,7 @@ package com.app.citysparsh.utils;
 import com.app.citysparsh.model.Ward;
 import com.app.citysparsh.repository.WardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
@@ -21,9 +22,15 @@ public class BangaloreWardSeeder implements CommandLineRunner {
     @Autowired
     private WardRepository wardRepo;
 
+    @Value("${FORCE_RESEED:false}")
+    private boolean forceReseed;
+
     @Override
     public void run(String... args) throws Exception {
-        if (wardRepo.count() > 0) return;
+        if (!forceReseed && wardRepo.count() > 0) {
+            System.out.println(">>> Wards already seeded, skipping.");
+            return;
+        }
 
         List<Ward> wards = new ArrayList<>();
 
