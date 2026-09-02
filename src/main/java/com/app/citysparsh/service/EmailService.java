@@ -31,7 +31,8 @@ public class EmailService {
             helper.setText(htmlBody, true);  // true = HTML
             mailSender.send(message);
         } catch (Exception e) {
-            System.err.println(">>> Email send failed: " + e.getMessage());
+            System.err.println(">>> Email send failed");
+            e.printStackTrace();
         }
     }
 
