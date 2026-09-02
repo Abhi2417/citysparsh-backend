@@ -112,7 +112,7 @@ public class EmailService {
                   </div>
                   
                   <p style="margin:0;font-size:13px;color:#94a3b8;line-height:1.6;">
-                    Log in to <a href="http://localhost:4200" style="color:#1a56db;">CitySparsh</a> to view full details.
+                    Log in to <a href="https://citysparsh.vercel.app" style="color:#1a56db;">CitySparsh</a> to view full details.
                   </p>
                 </div>
                 
@@ -205,7 +205,7 @@ public class EmailService {
                   </div>
                   
                   <p style="margin:0;font-size:13px;color:#94a3b8;line-height:1.6;">
-                    Log in to <a href="http://localhost:4200" style="color:#1a56db;">CitySparsh Officer Portal</a> to manage this case.
+                    Log in to <a href="https://citysparsh.vercel.app" style="color:#1a56db;">CitySparsh Officer Portal</a> to manage this case.
                   </p>
                 </div>
                 

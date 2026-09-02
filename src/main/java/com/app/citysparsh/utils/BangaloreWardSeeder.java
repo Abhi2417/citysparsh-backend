@@ -22,12 +22,10 @@ public class BangaloreWardSeeder implements CommandLineRunner {
     @Autowired
     private WardRepository wardRepo;
 
-    @Value("${FORCE_RESEED:false}")
-    private boolean forceReseed;
 
     @Override
     public void run(String... args) throws Exception {
-        if (!forceReseed && wardRepo.count() > 0) {
+        if (wardRepo.count() > 0) {
             System.out.println(">>> Wards already seeded, skipping.");
             return;
         }
