@@ -43,7 +43,7 @@ spring:
 
 app:
   mail:
-    from: ${MAIL_USERNAME}
+    from: ${MAIL_FROM}
     app-name: CitySparsh
   frontend-url: ${FRONTEND_URL:http://localhost:4200}
   upload:
