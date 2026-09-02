@@ -25,10 +25,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.Instant;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -49,8 +46,11 @@ public class ComplaintServiceImpl implements ComplaintService {
     @Autowired
     private AutoAssignService   autoAssignService;
 
-    @Value("${app.upload.dir:uploads/complaints}")
-    private String uploadDir;
+    @Autowired
+    private FileStorageService fileStorageService;
+
+//    @Value("${app.upload.dir:uploads/complaints}")
+//    private String uploadDir;
 
     private static final long MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 
@@ -123,42 +123,42 @@ public class ComplaintServiceImpl implements ComplaintService {
         }
     }
 
-    private String saveFile(MultipartFile file) throws IOException {
-        Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
-        if (!Files.exists(uploadPath)) {
-            Files.createDirectories(uploadPath);
-        }
-
-        // Sanitize original filename - strip any path components, keep only the name
-        String originalName = StringUtils.cleanPath(
-                Objects.requireNonNullElse(file.getOriginalFilename(), "file"));
-        originalName = Paths.get(originalName).getFileName().toString(); // strips any dir parts
-        originalName = originalName.replaceAll("[^a-zA-Z0-9._-]", "_"); // strip odd chars
-
-        String uniqueFilename = UUID.randomUUID() + "_" + originalName;
-        Path destination = uploadPath.resolve(uniqueFilename).normalize();
-
-        // Defense in depth: ensure resolved path is still inside uploadPath
-        if (!destination.startsWith(uploadPath)) {
-            throw new IOException("Invalid file path resolution.");
-        }
-
-        long bytesCopied = Files.copy(file.getInputStream(), destination,
-                StandardCopyOption.REPLACE_EXISTING);
-
-        // Verify the file was actually persisted and complete
-        if (!Files.exists(destination)) {
-            throw new IOException("File save failed: destination does not exist after copy.");
-        }
-        long savedSize = Files.size(destination);
-        if (savedSize != file.getSize() || bytesCopied != file.getSize()) {
-            Files.deleteIfExists(destination); // cleanup partial/corrupt file
-            throw new IOException("File save failed: size mismatch (expected "
-                    + file.getSize() + ", got " + savedSize + ").");
-        }
-
-        return uploadDir + "/" + uniqueFilename;
-    }
+//    private String saveFile(MultipartFile file) throws IOException {
+//        Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
+//        if (!Files.exists(uploadPath)) {
+//            Files.createDirectories(uploadPath);
+//        }
+//
+//        // Sanitize original filename - strip any path components, keep only the name
+//        String originalName = StringUtils.cleanPath(
+//                Objects.requireNonNullElse(file.getOriginalFilename(), "file"));
+//        originalName = Paths.get(originalName).getFileName().toString(); // strips any dir parts
+//        originalName = originalName.replaceAll("[^a-zA-Z0-9._-]", "_"); // strip odd chars
+//
+//        String uniqueFilename = UUID.randomUUID() + "_" + originalName;
+//        Path destination = uploadPath.resolve(uniqueFilename).normalize();
+//
+//        // Defense in depth: ensure resolved path is still inside uploadPath
+//        if (!destination.startsWith(uploadPath)) {
+//            throw new IOException("Invalid file path resolution.");
+//        }
+//
+//        long bytesCopied = Files.copy(file.getInputStream(), destination,
+//                StandardCopyOption.REPLACE_EXISTING);
+//
+//        // Verify the file was actually persisted and complete
+//        if (!Files.exists(destination)) {
+//            throw new IOException("File save failed: destination does not exist after copy.");
+//        }
+//        long savedSize = Files.size(destination);
+//        if (savedSize != file.getSize() || bytesCopied != file.getSize()) {
+//            Files.deleteIfExists(destination); // cleanup partial/corrupt file
+//            throw new IOException("File save failed: size mismatch (expected "
+//                    + file.getSize() + ", got " + savedSize + ").");
+//        }
+//
+//        return uploadDir + "/" + uniqueFilename;
+//    }
 
     // ── Service Methods ────────────────────────────────────────────────────────
 
@@ -183,16 +183,15 @@ public class ComplaintServiceImpl implements ComplaintService {
 
 
         // Handle optional file attachment
-        MultipartFile attachment = dto.getAttachment();
-        if (attachment != null && !attachment.isEmpty()) {
-            validateFile(attachment);
+        if (dto.getAttachment() != null && !dto.getAttachment().isEmpty()) {
+            Map<String, String> uploaded = null;
             try {
-                c.setAttachmentPath(saveFile(attachment));
-                c.setAttachmentName(attachment.getOriginalFilename());
+                uploaded = fileStorageService.uploadFile(dto.getAttachment());
             } catch (IOException e) {
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-                        "Failed to store attachment: " + e.getMessage());
+                throw new RuntimeException(e);
             }
+            c.setAttachmentName(uploaded.get("name"));
+            c.setAttachmentPath(uploaded.get("url"));  // ← Cloudinary URL
         }
 
         Ward detectedWard = null;

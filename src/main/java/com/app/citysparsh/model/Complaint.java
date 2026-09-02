@@ -48,6 +48,7 @@ public class Complaint {
     private String resolutionComment;
 
     // Stored file path or cloud URL (e.g. "uploads/complaints/uuid_filename.pdf")
+    @Column(length = 1000)  // ← increase length for URL
     private String attachmentPath;
 
     // Original filename shown to users (e.g. "my-document.pdf")
