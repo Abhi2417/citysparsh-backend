@@ -230,7 +230,7 @@ public class EmailService {
     }
 
     public void sendPasswordResetEmail(String to, String firstName, String token) {
-        String resetLink = "https://citysparsh.vercel.app/reset-password?token=" + token;
+        String resetLink = "https://citysparsh.vercel.app/#/reset-password?token=" + token;
         String subject   = "[CitySparsh] Reset your password";
 
         String html = """
